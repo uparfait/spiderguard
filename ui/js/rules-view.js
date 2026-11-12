@@ -16,7 +16,8 @@ SG.rulesView = (function () {
         <button class="primary" type="submit">Add</button></form></div>
       <ul class="chips">${own.map((r) => `<li><span>${esc(r)}</span>
         <button data-remove="${esc(r)}" aria-label="Remove ${esc(r)}">×</button></li>`).join('')}</ul>
-      <p class="hint">A site also covers its subdomains. Explorer, Finder, terminals and abc are never blocked.</p>
+      <p class="hint">A site also covers its subdomains. Apps can be named as you know them, like Microsoft Teams.
+        Explorer, Finder, terminals and abc are never blocked.</p>
     </div>`;
   }
 
