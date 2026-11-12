@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { host } from './host.js';
 import { createRuleStore } from './rules-store.js';
 import { createSiteBlocker } from './sites.js';
+import { createSiteKeeper } from './site-keeper.js';
 import { createAppGuard } from './guard.js';
 import { stopActions } from './app-actions.js';
 import { createEffects } from './effects.js';
@@ -21,8 +22,9 @@ export function createApp() {
     const dry = process.env.SPIDERGUARD_DRY_RUN === '1';
     const rules = createRuleStore(host);
     const sites = createSiteBlocker({ dataDir, host, dry });
+    const keeper = createSiteKeeper({ sites, ...(dry ? { hasBlock: () => true } : {}) });
     const guard = createAppGuard({ host, ...(dry ? { list: async () => [] } : {}) });
-    const effects = createEffects({ host, sites, guard, rules, dataDir });
+    const effects = createEffects({ host, sites, keeper, guard, rules, dataDir });
     const session = createSession({ host, effects });
     parts = { dataDir, rules, sites, effects, session };
     await rules.load();

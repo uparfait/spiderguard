@@ -10,18 +10,20 @@ function noticeFor(last, next) {
   return ['Break over', 'Ready when you are for the next session.'];
 }
 
-export function createEffects({ host, sites, guard, rules, dataDir }) {
+export function createEffects({ host, sites, keeper, guard, rules, dataDir }) {
   let badge = null;
 
   async function block(state) {
     const { sites: list, apps } = rules.targets();
     guard.start({ apps, strict: state.strict });
     const ok = await sites.apply(list);
+    keeper.start(list);
     host.emit('blocking', { sites: ok, count: list.length, apps: apps.length });
   }
 
   async function unblock(prompt = true) {
     guard.stop();
+    keeper.stop();
     await sites.clear({ prompt });
   }
 
