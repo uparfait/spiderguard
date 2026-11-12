@@ -1,0 +1,47 @@
+/* The ring timer. It never turns red: focus is chocolate, breaks are green. */
+.ring-wrap { position: relative; width: 260px; height: 260px; }
+.ring { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring circle { fill: none; stroke-width: 8; }
+.ring-track { stroke: var(--fg-line); }
+.ring-fill {
+  stroke: var(--fg-focus);
+  stroke-linecap: butt;
+  /* One step each second, moving smoothly between steps. */
+  transition: stroke-dashoffset 1s linear, stroke 600ms ease;
+}
+.ring-fill.instant { transition: none; }
+.ring-fill[data-phase="short"], .ring-fill[data-phase="long"] { stroke: var(--fg-break); }
+/* At a session's end the ring fills with green over 600ms. */
+.ring-fill[data-phase="done"] { stroke: var(--fg-break); transition: stroke-dashoffset 600ms ease-out, stroke 600ms ease; }
+
+.ring-text {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.clock { font-size: 64px; font-weight: 300; font-variant-numeric: tabular-nums; line-height: 1; }
+.phase { color: var(--fg-muted); margin-top: var(--space); }
+
+.rounds { display: flex; gap: var(--space); }
+.rounds span { width: 8px; height: 8px; border: 1px solid var(--fg-muted); }
+.rounds span.on { background: var(--fg-break); border-color: var(--fg-break); }
+
+.controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space); }
+.controls label { display: flex; align-items: center; gap: 4px; color: var(--fg-muted); }
+
+/* "End early" fills over the 10 second hold. */
+.hold { position: relative; overflow: hidden; }
+.hold-fill { position: absolute; inset: 0 auto 0 0; width: 0; background: var(--fg-line); transition: width 150ms; }
+.hold.holding .hold-fill { width: 100%; transition: width 10s linear; }
+.hold-label { position: relative; }
+
+/* The mini window: smaller ring, 28px digits. */
+@media (max-width: 420px) {
+  main { padding: var(--space); }
+  .view { gap: var(--space); }
+  .ring-wrap { width: 168px; height: 168px; }
+  .clock { font-size: 28px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring-fill, .ring-fill[data-phase="done"], .hold.holding .hold-fill { transition: none; }
+}
