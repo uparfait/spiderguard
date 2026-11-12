@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { spawnSync } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { linkFiles, readJsonFile, writeJsonFile, helperAlive, waitDone } from '../src/helper-link.js';
 
 const fresh = () => mkdtempSync(join(tmpdir(), 'spiderguard-'));
@@ -35,4 +35,17 @@ test('the helper exits by itself when SpiderGuard is gone', () => {
   const dead = spawnSync(process.execPath, ['-e', 'console.log(process.pid)']).stdout.toString().trim();
   const res = spawnSync(process.execPath, ['src/hosts-helper.js', fresh(), dead], { timeout: 10000 });
   assert.equal(res.status, 0);
+});
+
+test('the helper answers a request and keeps a heartbeat', async () => {
+  const dir = fresh();
+  // An empty list on a hosts file with no block writes nothing.
+  writeJsonFile(linkFiles(dir).want, { seq: 7, sites: [] });
+  const helper = spawn(process.execPath, ['src/hosts-helper.js', dir, String(process.pid)]);
+  try {
+    assert.equal(await waitDone(dir, 7, 5000), true);
+    assert.ok(helperAlive(dir));
+  } finally {
+    helper.kill();
+  }
 });
