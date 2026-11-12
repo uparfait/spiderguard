@@ -16,6 +16,7 @@ test('history keeps one line per finished session and skips bad lines', () => {
   appendFileSync(join(dir, 'history.json'), '{broken\n');
   addHistory(dir, { start: NOW, minutes: 7.25, kind: 'early' });
   addHistory(dir, { start: NOW, minutes: 5, kind: 'short' });
+  addHistory(dir, { start: NOW, minutes: 0.03, kind: 'early' });
   assert.deepEqual(readHistory(dir).map((e) => e.minutes), [25, 7.3]);
 });
 

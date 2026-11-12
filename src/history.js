@@ -7,8 +7,10 @@ const KINDS = ['focus', 'early'];
 const file = (dataDir) => join(dataDir, 'history.json');
 
 export function addHistory(dataDir, entry) {
-  if (!KINDS.includes(entry.kind) || !(entry.minutes > 0)) return;
-  const line = { start: Math.round(entry.start), minutes: Math.round(entry.minutes * 10) / 10, kind: entry.kind };
+  const minutes = Math.round(entry.minutes * 10) / 10;
+  // Under 6 seconds rounds to 0 minutes: nothing worth keeping.
+  if (!KINDS.includes(entry.kind) || !(minutes > 0)) return;
+  const line = { start: Math.round(entry.start), minutes, kind: entry.kind };
   mkdirSync(dataDir, { recursive: true });
   appendFileSync(file(dataDir), `${JSON.stringify(line)}\n`);
 }
