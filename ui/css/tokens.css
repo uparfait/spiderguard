@@ -1,0 +1,45 @@
+/* SpiderGuard colors. Warm, flat, no shadows. When abc gives its accent,
+   it takes the place of --fg-focus so the app follows the user theme.
+   abc sets --abc-mode; bridge.js copies it to data-theme. */
+:root {
+  --fg-bg: #FBF7F2;
+  --fg-surface: #FFFFFF;
+  --fg-text: #2B1A12;
+  --fg-muted: #7A6457;
+  --fg-focus: var(--abc-accent, #5E3023);
+  --fg-on-focus: var(--abc-accent-text, #FFFFFF);
+  --fg-break: #228B22;
+  --fg-line: #E8DCD2;
+  --fg-alert: #B3261E;
+  --space: 8px;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --fg-bg: #1E1410;
+  --fg-surface: #2A1D17;
+  --fg-text: #F3E9E1;
+  --fg-muted: #B8A497;
+  --fg-focus: var(--abc-accent, #C98A6B);
+  --fg-on-focus: var(--abc-accent-text, #1E1410);
+  --fg-break: #5CC45C;
+  --fg-line: #3A2A22;
+  --fg-alert: #F2B8B5;
+  color-scheme: dark;
+}
+
+/* Outside abc, follow the computer's light or dark setting. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --fg-bg: #1E1410;
+    --fg-surface: #2A1D17;
+    --fg-text: #F3E9E1;
+    --fg-muted: #B8A497;
+    --fg-focus: var(--abc-accent, #C98A6B);
+    --fg-on-focus: var(--abc-accent-text, #1E1410);
+    --fg-break: #5CC45C;
+    --fg-line: #3A2A22;
+    --fg-alert: #F2B8B5;
+    color-scheme: dark;
+  }
+}
