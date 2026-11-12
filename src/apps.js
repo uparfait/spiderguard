@@ -1,6 +1,7 @@
-// Reads the running programs: "tasklist" on Windows, "ps" on macOS and Linux.
-import { execFile } from 'node:child_process';
+// Reading process lists, and picking the processes to hold back.
+// Each process is { pid, name, alt }; see scan.js for what "alt" is.
 import { appMatches } from './rules.js';
+import { isProtected } from './protected.js';
 
 // Lines like: "chrome.exe","1234","Console","1","120,000 K"
 export function parseTasklist(text) {
@@ -12,26 +13,32 @@ export function parseTasklist(text) {
   return out;
 }
 
-// Lines like: "  812 /Applications/Slack.app/Contents/MacOS/Slack"
+// macOS lines like: "  812 /Applications/Slack.app/Contents/MacOS/Slack".
+// The app bundle ("Slack", "Google Chrome") is the second name.
 export function parsePs(text) {
   const out = [];
   for (const line of String(text).split(/\r?\n/)) {
     const m = /^\s*(\d+)\s+(.+?)\s*$/.exec(line);
-    if (m) out.push({ name: m[2], pid: Number(m[1]) });
+    if (!m) continue;
+    const bundle = /([^/]+)\.app\//.exec(m[2]);
+    out.push({ name: m[2], pid: Number(m[1]), ...(bundle ? { alt: bundle[1] } : {}) });
   }
   return out;
 }
 
-export function listApps() {
-  const win = process.platform === 'win32';
-  const [cmd, args] = win ? ['tasklist', ['/fo', 'csv', '/nh']] : ['ps', ['-A', '-o', 'pid=,comm=']];
-  const opts = { windowsHide: true, timeout: 5000, maxBuffer: 8 * 1024 * 1024 };
-  return new Promise((resolve) => {
-    execFile(cmd, args, opts, (err, out) => resolve(err ? [] : (win ? parseTasklist : parsePs)(out)));
-  });
+// Linux lines like: " 812 telegram-deskto /opt/telegram/telegram-desktop --x"
+export function parsePsArgs(text) {
+  const out = [];
+  for (const line of String(text).split(/\r?\n/)) {
+    const m = /^\s*(\d+)\s+(\S+)\s*(\S*)/.exec(line);
+    if (m) out.push({ name: m[2], alt: m[3] || undefined, pid: Number(m[1]) });
+  }
+  return out;
 }
 
-// The running programs to hold back. Never SpiderGuard itself or a protected app.
+// The processes to hold back. Never SpiderGuard itself, and never a
+// protected program, even when its description matches a rule.
 export function findBlocked(running, apps, self = [process.pid, process.ppid]) {
-  return running.filter((p) => p.pid > 0 && !self.includes(p.pid) && appMatches(p.name, apps));
+  return running.filter((p) => p.pid > 0 && !self.includes(p.pid) && !isProtected(p.name)
+    && [p.name, p.alt].some((n) => n && appMatches(n, apps)));
 }

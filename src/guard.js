@@ -1,10 +1,14 @@
 // Holds back blocked apps during a focus session: every 2 seconds it reads
 // the running programs and minimizes (gentle) or closes (strict) matches.
-import { listApps, findBlocked } from './apps.js';
+import { findBlocked } from './apps.js';
+import { listApps } from './scan.js';
 import { minimizeApps, closeApps } from './app-actions.js';
-import { cleanApp } from './rules.js';
+import { showApp } from './app-names.js';
 
 const DEFAULT_ACTIONS = { minimize: minimizeApps, close: closeApps };
+// The name people know: the description or bundle ("Character Map"), not
+// "charmap". On Linux the second name is a command, so the short name is used.
+const label = (p) => showApp(process.platform !== 'linux' && p.alt ? p.alt : p.name);
 
 export function createAppGuard({ host, list = listApps, actions = DEFAULT_ACTIONS, every = 2000 }) {
   let timer = null;
@@ -22,7 +26,7 @@ export function createAppGuard({ host, list = listApps, actions = DEFAULT_ACTION
       const pids = found.map((p) => p.pid);
       if (strict) actions.close(pids);
       else actions.minimize(pids);
-      for (const app of new Set(found.map((p) => cleanApp(p.name)))) {
+      for (const app of new Set(found.map(label))) {
         host.emit('blocked', { app, strict });
         if (told.has(app)) continue;
         told.add(app);
