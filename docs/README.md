@@ -31,10 +31,10 @@ One file per feature:
 | `src/rpc.js`, `src/host.js` | JSON-RPC lines, calls to abc |
 | `src/app.js`, `src/methods.js` | Boot after `initialize`, every method |
 | `src/timer.js`, `src/session.js`, `src/effects.js` | Timer, running session, phase side effects |
-| `src/rules.js`, `src/groups.js`, `src/protected.js`, `src/rules-store.js` | Rules |
-| `src/hosts.js`, `src/hosts-file.js`, `src/sites.js` | Hosts file block |
+| `src/rules.js`, `src/site-names.js`, `src/app-names.js`, `src/groups.js`, `src/protected.js`, `src/rules-store.js` | Rules and names |
+| `src/hosts.js`, `src/host-names.js`, `src/site-extras.js`, `src/hosts-file.js`, `src/sites.js`, `src/site-keeper.js` | Hosts file block |
 | `src/elevate.js`, `src/hosts-helper.js`, `src/helper-link.js` | Admin helper |
-| `src/apps.js`, `src/app-actions.js`, `src/guard.js` | App blocking |
+| `src/scan.js`, `src/apps.js`, `src/guard.js`, `src/app-actions.js`, `src/win-shell.js`, `src/win-native.js` | App blocking |
 | `src/history.js`, `src/stats.js` | History and stats |
 | `ui/` | The page: `index.html`, `css/`, `js/` |
 | `test/` | Tests |
