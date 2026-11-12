@@ -1,0 +1,38 @@
+/* The rules and stats views. */
+.panel { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: calc(var(--space) * 2); }
+.panel h2 { font-size: 12px; font-weight: 600; color: var(--fg-muted); margin: 0 0 var(--space); text-transform: uppercase; letter-spacing: 0.04em; }
+
+.groups { display: flex; gap: var(--space); flex-wrap: wrap; }
+.groups button[aria-pressed="true"] { background: var(--fg-focus); color: var(--fg-on-focus); border-color: var(--fg-focus); }
+
+.add { display: flex; gap: var(--space); }
+.add input { flex: 1; min-width: 0; }
+
+.chips { display: flex; flex-wrap: wrap; gap: var(--space); list-style: none; margin: 0; padding: 0; }
+.chips li { display: flex; align-items: center; border: 1px solid var(--fg-line); background: var(--fg-surface); }
+.chips span { padding: 4px var(--space); }
+.chips button { border: 0; border-left: 1px solid var(--fg-line); background: none; padding: 4px var(--space); cursor: pointer; color: var(--fg-muted); }
+
+/* Stat tiles: big number in text ink, label in muted ink. */
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space); }
+.tile { border: 1px solid var(--fg-line); background: var(--fg-surface); padding: var(--space); }
+.tile b { display: block; font-size: 24px; font-weight: 400; font-variant-numeric: tabular-nums; }
+.tile span { font-size: 12px; color: var(--fg-muted); }
+
+/* Last 7 days: one hue, bars sit on the baseline with a 2px gap. */
+.week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; align-items: end; height: 96px; border-bottom: 1px solid var(--fg-line); }
+.bar { position: relative; height: 100%; display: flex; align-items: flex-end; }
+.bar i { display: block; width: 100%; background: var(--fg-focus); min-height: 0; }
+.bar:hover i, .bar:focus-visible i { opacity: 0.8; }
+.bar .tip {
+  position: absolute; bottom: calc(100% + 4px); left: 50%; transform: translateX(-50%);
+  background: var(--fg-surface); border: 1px solid var(--fg-line); color: var(--fg-text);
+  padding: 2px 6px; font-size: 12px; white-space: nowrap; pointer-events: none; display: none;
+}
+.bar:hover .tip, .bar:focus-visible .tip { display: block; }
+.days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; font-size: 11px; color: var(--fg-muted); text-align: center; }
+
+@media (max-width: 420px) {
+  .tile b { font-size: 18px; }
+  .week { height: 64px; }
+}
