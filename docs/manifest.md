@@ -42,8 +42,3 @@ prompt, only when a site must be blocked. See [sites.md](sites.md).
   `history.json` and the helper link files there. abc keeps
   `storage.json` there for `host.storage`.
 - No libraries: only Node built-ins, so `npm ci` installs nothing.
-
-## A new version
-
-Raise `version` in `abc.json` and `package.json`, push, tag `v<version>`,
-then run `abc publish`.
