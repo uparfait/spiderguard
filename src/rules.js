@@ -1,47 +1,38 @@
-// Rules: a rule is a site ("youtube.com"), an app ("spotify") or a group
-// ("Social"). Names are compared in lowercase, with "www." taken off.
+// Rules: a rule is a site ("youtube.com"), an app ("Spotify") or a group
+// ("Social"). Site names: site-names.js. App names: app-names.js.
 import { GROUPS } from './groups.js';
 import { isProtected } from './protected.js';
+import { normApp, appNamesFor, hasAlias } from './app-names.js';
+import { cleanSite, isSite, siteMatches } from './site-names.js';
 
-const DOMAIN = /^[a-z0-9-]+(\.[a-z0-9-]+)+$/;
+export { cleanSite, isSite, siteMatches };
+export const cleanApp = normApp;
+
 const MAX_RULES = 300;
-
-// "https://www.YouTube.com/watch?v=1" -> "youtube.com"
-export const cleanSite = (text) => String(text).trim().toLowerCase()
-  .replace(/^[a-z][a-z0-9+.-]*:\/\//, '').split(/[/?#:]/)[0]
-  .replace(/^www\./, '').replace(/\.$/, '');
-
-// "C:\\Apps\\Spotify.exe" or "/Applications/Spotify.app" -> "spotify"
-export const cleanApp = (text) => String(text).trim().toLowerCase()
-  .split(/[\\/]/).filter(Boolean).pop()?.replace(/\.(exe|app)$/, '') || '';
-
-export const isSite = (text) => !/\.(exe|app)$/i.test(String(text).trim()) && DOMAIN.test(cleanSite(text));
-
-// A site rule also covers every subdomain: youtube.com covers m.youtube.com.
-export function siteMatches(host, rule) {
-  const h = cleanSite(host);
-  const r = cleanSite(rule);
-  return Boolean(r) && (h === r || h.endsWith(`.${r}`));
-}
 
 // Protected apps never match, whatever the rules say.
 export function appMatches(name, apps) {
-  const n = cleanApp(name);
+  const n = normApp(name);
   return Boolean(n) && !isProtected(n) && apps.includes(n);
 }
 
-// Turns the rule list into the sites and apps to block.
+// Turns the rule list into the sites and the program names to block.
 export function expand(rules) {
   const sites = new Set();
   const apps = new Set();
+  const addApp = (text) => appNamesFor(text).filter((n) => !isProtected(n)).forEach((n) => apps.add(n));
   for (const raw of rules || []) {
     const text = String(raw).trim();
-    const group = GROUPS[text.toLowerCase()];
+    const group = Object.hasOwn(GROUPS, text.toLowerCase()) ? GROUPS[text.toLowerCase()] : null;
     if (group) {
       group.sites.forEach((s) => sites.add(s));
-      group.apps.forEach((a) => apps.add(a));
-    } else if (isSite(text)) sites.add(cleanSite(text));
-    else if (cleanApp(text) && !isProtected(cleanApp(text))) apps.add(cleanApp(text));
+      group.apps.forEach(addApp);
+      continue;
+    }
+    const site = isSite(text);
+    if (site) sites.add(cleanSite(text));
+    // "Battle.net" is both a site and an app, so it blocks both.
+    if (!site || hasAlias(text)) addApp(text);
   }
   return { sites: [...sites], apps: [...apps] };
 }
