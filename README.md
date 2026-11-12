@@ -18,20 +18,15 @@ Blocking sites changes the system hosts file, so SpiderGuard asks once for
 admin rights, through the normal OS prompt, and always removes its block
 when a session ends or the app stops.
 
-## Use
+## You must have the abc app
 
-```bash
-abc install spiderguard
-abc start spiderguard
-```
+SpiderGuard runs only inside the abc app. It does not open on its own.
 
-## Build
+1. Download abc from the **Download** page of the abc web site and install it.
+2. Open abc, go to the **Marketplace**, search for **SpiderGuard**, and
+   click **Install**.
+3. Open SpiderGuard from your apps in abc, and start a session.
 
-```bash
-npm test     # unit and protocol tests
-abc test     # every publish check
-abc publish
-```
-
-Read [abc_doc.md](abc_doc.md) for the abc basics, and [docs/](docs/README.md)
-for each feature.
+Step by step, with the installer for each computer:
+[docs/abc-app.md](docs/abc-app.md). Each feature is explained in
+[docs/](docs/README.md).
