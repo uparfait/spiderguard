@@ -8,23 +8,27 @@ import { launchHelper, REASON } from './elevate.js';
 
 const DENIED = ['EPERM', 'EACCES', 'EROFS'];
 const PROMPT_WAIT = 60000;
+const HELPER_WAIT = 6000;
 const QUICK_WAIT = 1500;
 
 export function createSiteBlocker({ dataDir, host, dry = false }) {
   let seq = Date.now();
   let declined = false;
+  let launchedAt = 0;
 
   async function viaHelper(sites, prompt) {
-    seq += 1;
-    writeJsonFile(linkFiles(dataDir).want, { seq, sites });
+    const mine = ++seq;
+    writeJsonFile(linkFiles(dataDir).want, { seq: mine, sites });
     const running = helperAlive(dataDir);
-    if (!running && (!prompt || declined)) return false;
-    if (!running) {
+    // One admin prompt at a time: a prompt already on screen is waited for.
+    if (!running && Date.now() - launchedAt > PROMPT_WAIT) {
+      if (!prompt || declined) return false;
+      launchedAt = Date.now();
       host.emit('notice', { kind: 'admin', text: REASON });
       launchHelper(dataDir);
     }
-    const ok = await waitDone(dataDir, seq, running ? QUICK_WAIT * 4 : prompt ? PROMPT_WAIT : QUICK_WAIT);
-    if (!ok && !helperAlive(dataDir)) declined = true;
+    const ok = await waitDone(dataDir, mine, !prompt ? QUICK_WAIT : running ? HELPER_WAIT : PROMPT_WAIT);
+    if (!ok && prompt && !helperAlive(dataDir)) declined = true;
     return ok;
   }
 
