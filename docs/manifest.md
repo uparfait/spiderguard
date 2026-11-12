@@ -4,7 +4,7 @@
 {
   "name": "spiderguard",
   "displayName": "SpiderGuard",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "app",
   "language": "node",
   "entry": "main.js",

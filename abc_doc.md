@@ -45,7 +45,7 @@ SpiderGuard's own methods and notices: [docs/protocol.md](docs/protocol.md).
 ## Publish
 
 1. Push this folder to GitHub.
-2. Tag the version: `git tag v1.0.0 && git push --tags`.
+2. Tag the version: `git tag v1.1.0 && git push --tags`.
 3. `abc login`, then `abc publish` (or `abc publish --private --token <t>`).
 
 For a new version: raise `version` in `abc.json`, push, tag, `abc publish`.
