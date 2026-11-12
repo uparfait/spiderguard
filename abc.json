@@ -1,0 +1,26 @@
+{
+  "name": "spiderguard",
+  "displayName": "SpiderGuard",
+  "version": "1.0.0",
+  "description": "Block distracting sites and apps during focus sessions, with a calm timer.",
+  "type": "app",
+  "language": "node",
+  "entry": "main.js",
+  "modes": [
+    "tab",
+    "window",
+    "background"
+  ],
+  "defaultMode": "window",
+  "ui": {
+    "path": "ui/index.html",
+    "size": [
+      320,
+      380
+    ]
+  },
+  "permissions": [
+    "notifications"
+  ],
+  "restart": "on-failure"
+}
